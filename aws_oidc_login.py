@@ -127,7 +127,7 @@ def web_console_login(assumed_role_object, session_duration=3600):
     return request_url
 
 
-if __name__ == "__main__":
+def aws_oidc_login():
     oidc = AADAuthenticationCodeFlowAuthorizer()
     token = oidc.get_access_token()
 
@@ -141,3 +141,7 @@ if __name__ == "__main__":
     print(response)
     login_url = web_console_login(response, session_duration=3600)
     print("console login url: {url}".format(url=login_url))
+
+
+if __name__ == "__main__":
+    aws_oidc_login()
