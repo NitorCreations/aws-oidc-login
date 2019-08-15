@@ -1,3 +1,4 @@
-AAD_CLIENT_ID = '44e9910d-4f2e-4a83-9848-d76f24051d93'
-AAD_TENANT_ID = '687fa259-bdca-476c-881e-e3ab9207b086'
-AAD_IDP_URL = 'https://login.microsoftonline.com/687fa259-bdca-476c-881e-e3ab9207b086/saml2'
+CLIENT_ID = '55793059-8be1-43f0-bd7b-1778c9ab02e4'
+TENANT_ID = '687fa259-bdca-476c-881e-e3ab9207b086'
+AUTHORITY_URL = 'https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0'.format(TENANT_ID=TENANT_ID)
+AUTH_SCOPE = ('openid')
