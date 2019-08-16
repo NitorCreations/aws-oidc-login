@@ -6,6 +6,7 @@ import json
 # pypi dependencies
 import boto3
 import requests
+import uuid
 
 try:
     # For Python 3.0 and later
@@ -32,19 +33,21 @@ aws_sts = boto3.client('sts')
 
 
 class AADAuthenticationCodeFlowAuthorizer:
-    thread_lock = threading.Lock()
 
     class _RedirectHandler(BaseHTTPRequestHandler):
         def do_GET(self):
+            success = False
             query_components = parse_qs(urlparse(self.path).query)
             try:
+                if query_components['state'][0] == AADAuthenticationCodeFlowAuthorizer.state:
+                    success = True
                 AADAuthenticationCodeFlowAuthorizer.code_result = query_components['code'][0]
             except KeyError:
                 self.fail()
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
-            if 'error' in query_components:
+            if not success or 'error' in query_components:
                 self.wfile.write(self._prepare_output('An error occured. Check the request URL for details.'))
             else:
                 self.wfile.write(self._prepare_output(('Login done. You can close this window or tab '
@@ -66,6 +69,7 @@ class AADAuthenticationCodeFlowAuthorizer:
                 return output
 
     def get_access_token(self):
+        AADAuthenticationCodeFlowAuthorizer.state = str(uuid.uuid4())
         url = config.AUTHORITY_URL \
             + '/authorize?' \
             + 'client_id={CLIENT_ID}'.format(CLIENT_ID=config.CLIENT_ID) \
@@ -73,7 +77,7 @@ class AADAuthenticationCodeFlowAuthorizer:
             + '&redirect_uri=http://localhost:8401' \
             + '&response_type=code' \
             + '&response_mode=query' \
-            + '&state=12345'
+            + '&state={STATE}'.format(STATE=AADAuthenticationCodeFlowAuthorizer.state)
         webbrowser.open_new(url)
 
         # with AADAuthenticationCodeFlowAuthorizer.thread_lock:
