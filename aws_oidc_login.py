@@ -1,22 +1,16 @@
 import sys
-import webbrowser
-import config
-import threading
 import json
 # pypi dependencies
 import boto3
 import requests
-import uuid
-
+from oidc_authorizer import OidcAuthenticationCodeFlowAuthorizer
 try:
-    # For Python 3.0 and later
+    # For Python 3.5 and later
     from urllib.parse import urlencode
     from urllib.parse import parse_qs
     from urllib.parse import unquote
     from urllib.parse import urlparse
     from urllib.parse import quote_plus
-    from http.server import BaseHTTPRequestHandler
-    from http.server import ThreadingHTTPServer as ThreadingHTTPServer
 except ImportError:
     # Fall back to Python 2
     from urllib import urlencode  # noqa: F401
@@ -24,87 +18,12 @@ except ImportError:
     from urlparse import unquote  # noqa: F401
     from urlparse import urlparse
     from urllib import quote_plus
-    from python2_httpserver import ThreadingHTTPServer as ThreadingHTTPServer
-    from BaseHTTPServer import BaseHTTPRequestHandler
-    # TODO solve http server python 2
-
 
 aws_sts = boto3.client('sts')
 
 
-class AADAuthenticationCodeFlowAuthorizer:
-
-    class _RedirectHandler(BaseHTTPRequestHandler):
-        def do_GET(self):
-            success = False
-            query_components = parse_qs(urlparse(self.path).query)
-            try:
-                if query_components['state'][0] == AADAuthenticationCodeFlowAuthorizer.state:
-                    success = True
-                AADAuthenticationCodeFlowAuthorizer.code_result = query_components['code'][0]
-            except KeyError:
-                self.fail()
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            if not success or 'error' in query_components:
-                self.wfile.write(self._prepare_output('An error occured. Check the request URL for details.'))
-            else:
-                self.wfile.write(self._prepare_output(('Login done. You can close this window or tab '
-                                                       'and crawl back to your shell.')))
-
-        def fail(self):
-            self.send_response(400)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            self.wfile.write(self._prepare_output("Didn't get authorization code in query parameter 'code'."))
-
-        def log_message(self, format, *args):
-            return
-
-        def _prepare_output(self, output):
-            if (sys.version_info > (3, 0)):
-                return bytes(output, "UTF-8")
-            else:
-                return output
-
-    def get_access_token(self):
-        AADAuthenticationCodeFlowAuthorizer.state = str(uuid.uuid4())
-        url = config.AUTHORITY_URL \
-            + '/authorize?' \
-            + 'client_id={CLIENT_ID}'.format(CLIENT_ID=config.CLIENT_ID) \
-            + '&scope={AUTH_SCOPE}'.format(AUTH_SCOPE=config.AUTH_SCOPE) \
-            + '&redirect_uri=http://localhost:8401' \
-            + '&response_type=code' \
-            + '&response_mode=query' \
-            + '&state={STATE}'.format(STATE=AADAuthenticationCodeFlowAuthorizer.state)
-        webbrowser.open_new(url)
-
-        # with AADAuthenticationCodeFlowAuthorizer.thread_lock:
-        with ThreadingHTTPServer(('127.0.0.1', 8401), self._RedirectHandler) as server:
-            server.timeout = 30
-            while not hasattr(AADAuthenticationCodeFlowAuthorizer, 'code_result'):
-                server.handle_request()
-        try:
-            code = AADAuthenticationCodeFlowAuthorizer.code_result
-        except AttributeError:
-            print("Failed to get authorization code from AAD. Try again?")
-            exit(1)
-
-        session = requests.Session()
-        resp = session.post(config.AUTHORITY_URL + '/token',
-                            data={'client_id': config.CLIENT_ID,
-                                  'scope': config.AUTH_SCOPE,
-                                  'code': code,
-                                  'redirect_uri': 'http://localhost:8401',
-                                  'grant_type': 'authorization_code'
-                                  })
-        token = resp.json()
-        return token["id_token"]
-
-
 def web_console_login(assumed_role_object, session_duration=3600):
-    # This code nostly from
+    # This code mostly from
     # https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_enable-console-custom-url.html
 
     url_credentials = {}
@@ -132,7 +51,7 @@ def web_console_login(assumed_role_object, session_duration=3600):
 
 
 def aws_oidc_login():
-    oidc = AADAuthenticationCodeFlowAuthorizer()
+    oidc = OidcAuthenticationCodeFlowAuthorizer()
     token = oidc.get_access_token()
 
     print("Assuming role...")

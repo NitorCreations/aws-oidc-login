@@ -2,3 +2,5 @@
 __pycache__/
 .python-version
 *.pyc
+.eggs/
+aws_oidc_login.egg-info/
