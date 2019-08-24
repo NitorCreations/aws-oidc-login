@@ -4,6 +4,7 @@ import json
 import boto3
 import requests
 from oidc_authorizer import OidcAuthenticationCodeFlowAuthorizer
+import jwt
 try:
     # For Python 3.5 and later
     from urllib.parse import urlencode
@@ -13,10 +14,10 @@ try:
     from urllib.parse import quote_plus
 except ImportError:
     # Fall back to Python 2
-    from urllib import urlencode  # noqa: F401
-    from urlparse import parse_qs
-    from urlparse import unquote  # noqa: F401
-    from urlparse import urlparse
+    from urllib import urlencode   # noqa: F401
+    from urlparse import parse_qs  # noqa: F401
+    from urlparse import unquote   # noqa: F401
+    from urlparse import urlparse  # noqa: F401
     from urllib import quote_plus
 
 aws_sts = boto3.client('sts')
@@ -53,11 +54,12 @@ def web_console_login(assumed_role_object, session_duration=3600):
 def aws_oidc_login():
     oidc = OidcAuthenticationCodeFlowAuthorizer()
     token = oidc.get_access_token()
+    email = jwt.get_email(token)
 
     print("Assuming role...")
     response = aws_sts.assume_role_with_web_identity(
         RoleArn=sys.argv[1],
-        RoleSessionName="aws-oidc-login-session",
+        RoleSessionName=email,
         WebIdentityToken=token,
         DurationSeconds=3600
     )
