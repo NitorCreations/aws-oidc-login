@@ -1,2 +1,6 @@
 flake8==3.7.7
 pip-tools==4.0.0
+pytest==4.6.5
+pytest-cov==2.7.1
+requests-mock==1.6.0
+pytest-mock==1.10.4

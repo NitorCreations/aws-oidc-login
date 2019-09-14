@@ -3,8 +3,9 @@ import json
 # pypi dependencies
 import boto3
 import requests
-from oidc_authorizer import OidcAuthenticationCodeFlowAuthorizer
-import jwt
+import login.jwt as jwt
+from login.oidc_authorizer import OidcAuthenticationCodeFlowAuthorizer
+
 try:
     # For Python 3.5 and later
     from urllib.parse import urlencode
@@ -20,7 +21,9 @@ except ImportError:
     from urlparse import urlparse  # noqa: F401
     from urllib import quote_plus
 
-aws_sts = boto3.client('sts')
+
+def get_aws_sts():
+    return boto3.client('sts')
 
 
 def web_console_login(assumed_role_object, session_duration=3600):
@@ -43,7 +46,7 @@ def web_console_login(assumed_role_object, session_duration=3600):
 
     # Create URL where users can use the sign-in token to sign in to the console.
     request_parameters = "?Action=login"
-    request_parameters += "&Issuer=Example.org"
+    request_parameters += "&Issuer=aws-oidc-login"
     request_parameters += "&Destination=" + quote_plus("https://console.aws.amazon.com/")
     request_parameters += "&SigninToken=" + signin_token["SigninToken"]
     request_url = "https://signin.aws.amazon.com/federation" + request_parameters
@@ -51,14 +54,14 @@ def web_console_login(assumed_role_object, session_duration=3600):
     return request_url
 
 
-def aws_oidc_login():
+def aws_oidc_login(role_arn):
     oidc = OidcAuthenticationCodeFlowAuthorizer()
-    token = oidc.get_access_token()
+    token = oidc.get_id_token()
     email = jwt.get_email(token)
 
     print("Assuming role...")
     response = aws_sts.assume_role_with_web_identity(
-        RoleArn=sys.argv[1],
+        RoleArn=role_arn,
         RoleSessionName=email,
         WebIdentityToken=token,
         DurationSeconds=3600
@@ -68,5 +71,7 @@ def aws_oidc_login():
     print("console login url: {url}".format(url=login_url))
 
 
+aws_sts = get_aws_sts()
+
 if __name__ == "__main__":
-    aws_oidc_login()
+    aws_oidc_login(sys.argv[1])

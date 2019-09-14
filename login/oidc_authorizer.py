@@ -1,6 +1,6 @@
 import webbrowser
 import uuid
-import config
+import login.config as config
 import sys
 import requests
 try:
@@ -62,7 +62,7 @@ class OidcAuthenticationCodeFlowAuthorizer:
             else:
                 return output
 
-    def get_access_token(self):
+    def get_id_token(self):
         OidcAuthenticationCodeFlowAuthorizer.state = str(uuid.uuid4())
         url = config.AUTHORITY_URL \
             + '/authorize?' \
