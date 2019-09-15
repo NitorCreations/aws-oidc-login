@@ -28,6 +28,8 @@ class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
 
 class OidcAuthenticationCodeFlowAuthorizer:
 
+    code_result = None
+
     class _RedirectHandler(BaseHTTPRequestHandler):
         def do_GET(self):
             success = False
@@ -76,11 +78,13 @@ class OidcAuthenticationCodeFlowAuthorizer:
 
         with ThreadingHTTPServer(('127.0.0.1', 8401), self._RedirectHandler) as server:
             server.timeout = 30
-            while not hasattr(OidcAuthenticationCodeFlowAuthorizer, 'code_result'):
+            count = 0
+            while not OidcAuthenticationCodeFlowAuthorizer.code_result and count < 2:
                 server.handle_request()
-        try:
-            code = OidcAuthenticationCodeFlowAuthorizer.code_result
-        except AttributeError:
+                count = count + 1
+
+        code = OidcAuthenticationCodeFlowAuthorizer.code_result
+        if not code:
             print("Failed to get authorization code from AAD. Try again?")
             exit(1)
 

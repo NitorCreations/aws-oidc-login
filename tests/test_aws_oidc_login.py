@@ -26,7 +26,8 @@ def oidc_patched(monkeypatch):
 
 
 def _mock_assume_role_with_web_identity(RoleArn, RoleSessionName, WebIdentityToken, DurationSeconds):
-    role = {'Credentials': {'AccessKeyId': 'testkeytestkeytestkey', 'SecretAccessKey': 'testsecret', 'SessionToken': 'testtoken'}}
+    role = {'Credentials': {'AccessKeyId': 'testkeytestkeytestkey',
+                            'SecretAccessKey': 'testsecret', 'SessionToken': 'testtoken'}}
     return role
 
 
