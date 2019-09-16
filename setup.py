@@ -10,13 +10,13 @@ setup(name='aws-oidc-login',
       author='Mika Majakorpi',
       author_email='mika.majakorpi@nitor.com',
       license='Apache 2.0',
-      packages=[],
+      packages=['login'],
       include_package_data=True,
       scripts=[],
       entry_points={
           'console_scripts': ['aws-oidc-login=login.aws_oidc_login:aws_oidc_login'],
       },
-      setup_requires=[],
+      setup_requires=['pytest-runner'],
       install_requires=[
           'boto3==1.9.208',
           'requests==2.22.0'],
@@ -24,5 +24,7 @@ setup(name='aws-oidc-login',
           'pytest==4.6.5',
           'pytest-mock==1.10.4',
           'pytest-cov==2.7.1',
-          'requests-mock==1.6.0'
-      ])
+          'requests-mock==1.6.0',
+          'pytest-runner'
+      ],
+      test_suite='tests')
