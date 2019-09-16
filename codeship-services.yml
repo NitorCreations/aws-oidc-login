@@ -1,0 +1,16 @@
+aws-oidc-login-p37:
+  build:
+    image: aws-oidc-login-p37
+    dockerfile: p37.Dockerfile
+aws-oidc-login-p36:
+  build:
+    image: aws-oidc-login-p36
+    dockerfile: p36.Dockerfile
+aws-oidc-login-p35:
+  build:
+    image: aws-oidc-login-p35
+    dockerfile: p35.Dockerfile
+aws-oidc-login-p27:
+  build:
+    image: aws-oidc-login-p27
+    dockerfile: p27.Dockerfile

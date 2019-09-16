@@ -1,0 +1,11 @@
+- name: ci
+  type: parallel
+  steps:
+  - service: aws-oidc-login-p37
+    command: pytest --cov=login
+  - service: aws-oidc-login-p36
+    command: pytest --cov=login
+  - service: aws-oidc-login-p35
+    command: pytest --cov=login
+  - service: aws-oidc-login-p27
+    command: pytest --cov=login
