@@ -2,6 +2,8 @@
 
 The aim for this is to keep away from promiscuous dependencies often seen in AWS login tools like `aws-azure-login` and `aws-cli-oidc`.
 
+[![Codeship Status for NitorCreations/aws-oidc-login](https://app.codeship.com/projects/c1b8cf70-ba79-0137-d140-5ec1c160b8c0/status?branch=master)](https://app.codeship.com/projects/364808)
+
 ## Setup
 * Create Azure AD App
     * Set public client reply url to `http://localhost`
