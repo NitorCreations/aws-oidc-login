@@ -19,11 +19,16 @@ except ImportError:
 
 class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
+    allow_reuse_address = True
+
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, tb):
         pass
+
+    def shutdown(self):
+        self.socket.close()
 
 
 class OidcAuthenticationCodeFlowAuthorizer:
@@ -32,28 +37,29 @@ class OidcAuthenticationCodeFlowAuthorizer:
 
     class _RedirectHandler(BaseHTTPRequestHandler):
         def do_GET(self):
-            success = False
             query_components = parse_qs(urlparse(self.path).query)
             try:
-                if query_components['state'][0] == OidcAuthenticationCodeFlowAuthorizer.state:
-                    success = True
-                OidcAuthenticationCodeFlowAuthorizer.code_result = query_components['code'][0]
+                code = query_components['code'][0]
             except KeyError:
-                self.fail()
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            if not success or 'error' in query_components:
-                self.wfile.write(self._prepare_output('An error occured. Check the request URL for details.'))
+                self.fail('Didn\'t get authorization code in query parameter "code".')
+            state = query_components.get('state', [None])[0]
+            if not state == OidcAuthenticationCodeFlowAuthorizer.state:
+                self.fail('Incorrect value for "state" parameter in OIDC flow. Try again?')
+            elif 'error' in query_components:
+                self.fail('An error occured. Check the request URL for details.')
             else:
+                OidcAuthenticationCodeFlowAuthorizer.code_result = code
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
                 self.wfile.write(self._prepare_output(('Login done. You can close this window or tab '
                                                        'and crawl back to your shell.')))
 
-        def fail(self):
+        def fail(self, message):
             self.send_response(400)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
-            self.wfile.write(self._prepare_output("Didn't get authorization code in query parameter 'code'."))
+            self.wfile.write(self._prepare_output(message))
 
         def log_message(self, format, *args):
             return
@@ -77,15 +83,17 @@ class OidcAuthenticationCodeFlowAuthorizer:
         webbrowser.open_new(url)
 
         with ThreadingHTTPServer(('127.0.0.1', 8401), self._RedirectHandler) as server:
-            server.timeout = 30
+            server.timeout = config.CALLBACK_SERVER_TIMEOUT
+            server.daemon_threads = True
             count = 0
             while not OidcAuthenticationCodeFlowAuthorizer.code_result and count < 2:
                 server.handle_request()
                 count = count + 1
+            server.shutdown()
 
         code = OidcAuthenticationCodeFlowAuthorizer.code_result
         if not code:
-            print("Failed to get authorization code from AAD. Try again?")
+            print("Failed to get authorization code from OIDC provider. Try again?")
             exit(1)
 
         session = requests.Session()
