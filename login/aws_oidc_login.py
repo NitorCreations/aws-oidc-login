@@ -3,8 +3,11 @@ import json
 # pypi dependencies
 import boto3
 import requests
+from login import config
 import login.jwt as jwt
 from login.oidc_authorizer import OidcAuthenticationCodeFlowAuthorizer
+from login import credentials
+import webbrowser
 
 try:
     # For Python 3.5 and later
@@ -54,21 +57,24 @@ def web_console_login(assumed_role_object, session_duration=3600):
     return request_url
 
 
-def aws_oidc_login(role_arn):
+def aws_oidc_login():
+    config.init()
     oidc = OidcAuthenticationCodeFlowAuthorizer()
     token = oidc.get_id_token()
     email = jwt.get_email(token)
 
-    print("Assuming role...")
-    response = aws_sts.assume_role_with_web_identity(
-        RoleArn=role_arn,
+    print("Assuming role {}".format(config.ROLE_ARN))
+    creds = aws_sts.assume_role_with_web_identity(
+        RoleArn=config.ROLE_ARN,
         RoleSessionName=email,
         WebIdentityToken=token,
         DurationSeconds=3600
     )
-    print(response)
-    login_url = web_console_login(response, session_duration=3600)
-    print("console login url: {url}".format(url=login_url))
+    credentials.write(config.PROFILE, creds)
+    if config.WEB_CONSOLE_LOGIN:
+        login_url = web_console_login(creds, session_duration=3600)
+        webbrowser.open_new_tab(login_url)
+        print("console login url: {url}".format(url=login_url))
 
 
 aws_sts = get_aws_sts()
