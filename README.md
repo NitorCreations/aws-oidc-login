@@ -25,10 +25,10 @@ Tested with Azure AD. Your mileage may vary with other providers, please let us 
 
 ## Install aws-oidc-login
 
-Clone this repo and run "`pip install -e .`" inside it.
+Clone this repo and run `pip install aws-oidc-login` inside it.
 
 ## Run
 
-Log in with default profile by simply running `aws-oidc-login`. 
+The executable is called `aol`. Log in with default profile by simply running `aol` or specify a profile with `aol [profile]`. 
 
-See `aws-oidc-login -h` for options.
+See `aol -h` for more options.
