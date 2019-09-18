@@ -50,6 +50,12 @@ def test_oidc_flow_error_from_idp(webbrowser_patched_error_from_idp, oidc_token_
     assert pytest_wrapped_e.value.code == 1
 
 
+@pytest.fixture(autouse=True)
+def config_patched(mocker):
+    mocker.patch('login.config.init', return_value=None)
+    config.AUTHORITY_URL = 'https://test-authority'
+
+
 @pytest.fixture
 def webbrowser_patched_ok(monkeypatch):
     import webbrowser
