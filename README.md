@@ -31,4 +31,4 @@ Clone this repo and run "`pip install -e .`" inside it.
 
 Log in with default profile by simply running `aws-oidc-login`. 
 
-See `aws-oidc-login -h` for options.
+See `aws-oidc-login -h` for options.
