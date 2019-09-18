@@ -19,7 +19,8 @@ setup(name='aws-oidc-login',
       setup_requires=['pytest-runner'],
       install_requires=[
           'boto3==1.9.208',
-          'requests==2.22.0'],
+          'requests==2.22.0',
+          'argparse==1.4.0'],
       tests_require=[
           'pytest==4.6.5',
           'pytest-mock==1.10.4',
