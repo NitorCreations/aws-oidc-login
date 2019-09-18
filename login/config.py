@@ -1,7 +1,15 @@
-import configparser
+
 from os.path import expanduser
 import sys
 import argparse
+
+try:
+    # For Python 3.5 and later
+    import configparser
+except ImportError:
+    # Fall back to Python 2
+    import ConfigParser as configparser
+
 
 AUTH_SCOPE = ('openid email')
 CALLBACK_SERVER_TIMEOUT = 30

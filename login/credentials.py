@@ -1,6 +1,12 @@
-import configparser
 from os.path import expanduser
 from login import config
+
+try:
+    # For Python 3.5 and later
+    import configparser
+except ImportError:
+    # Fall back to Python 2
+    import ConfigParser as configparser
 
 
 def write(profile, new_creds):

@@ -80,4 +80,4 @@ def aws_oidc_login():
 aws_sts = get_aws_sts()
 
 if __name__ == "__main__":
-    aws_oidc_login(sys.argv[1])
+    aws_oidc_login()
