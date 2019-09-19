@@ -34,6 +34,17 @@ def test_init(args_patched, aws_config_patched):
     args_patched.assert_called_once()
 
 
+def test_missing_authority_url(args_patched, aws_config_patched_without_authority_url):
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        config.init()
+
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == 1
+    for mock in aws_config_patched_without_authority_url:
+        mock.assert_called_once()
+    args_patched.assert_called_once()
+
+
 @pytest.fixture
 def args_patched(mocker):
     return mocker.patch('argparse.ArgumentParser.parse_args', return_value=argparse.Namespace(**args))
@@ -42,6 +53,16 @@ def args_patched(mocker):
 @pytest.fixture
 def aws_config_patched(mocker):
     mock1 = mocker.patch('configparser.ConfigParser.__getitem__', return_value=params)
+    mock2 = mocker.patch('configparser.ConfigParser.read', return_value=None)
+    mock3 = mocker.patch('configparser.ConfigParser.has_section', return_value=True)
+    return mock1, mock2, mock3
+
+
+@pytest.fixture
+def aws_config_patched_without_authority_url(mocker):
+    newparams = params.copy()
+    newparams.pop("oidc_authority_url")
+    mock1 = mocker.patch('configparser.ConfigParser.__getitem__', return_value=newparams)
     mock2 = mocker.patch('configparser.ConfigParser.read', return_value=None)
     mock3 = mocker.patch('configparser.ConfigParser.has_section', return_value=True)
     return mock1, mock2, mock3
