@@ -8,7 +8,7 @@ try:
     import configparser
 except ImportError:
     # Fall back to Python 2
-    import ConfigParser as configparser
+    import ConfigParser as configparser  # noqa: F401
 
 
 AUTH_SCOPE = ('openid email')
@@ -35,7 +35,7 @@ def init():
     aws_config.read(home + '/.aws/config')
 
     if not aws_config.has_section(CONFIG_PROFILE):
-        print("Couldn't find configuration for profile: {}".format(CONFIG_PROFILE))
+        print("Couldn't find configuration for profile: {}".format(PROFILE))
         sys.exit(1)
 
     config_section = aws_config[CONFIG_PROFILE]
