@@ -9,8 +9,9 @@ except ImportError:
     # Fall back to Python 2
     import ConfigParser as configparser  # noqa: F401
 
-args = {"profile": "test-profile",
-        "web_console_login": False}
+args = {'profile': 'test-profile',
+        'web_console_login': True,
+        'print_auth_url': True}
 
 params = {"oidc_role_arn": "arn:aws:iam::123456789012:role/test_role",
           "oidc_client_id": "testclientid",
@@ -47,11 +48,12 @@ def test_init_missing_authority_url(args_patched, aws_config_patched_without_aut
 
 def _verify_config(args, params):
     assert config.PROFILE == args['profile']
-    assert config.CONFIG_PROFILE == "profile {}".format(args['profile'])
+    assert config.CONFIG_PROFILE == 'profile {}'.format(args['profile'])
     assert config.ROLE_ARN == params['oidc_role_arn']
     assert config.CLIENT_ID == params['oidc_client_id']
     assert config.AUTHORITY_URL == params['oidc_authority_url']
     assert config.WEB_CONSOLE_LOGIN == args['web_console_login']
+    assert config.PRINT_AUTHORIZE_URL == args['print_auth_url']
 
 
 @pytest.fixture
@@ -70,7 +72,7 @@ def aws_config_patched(mocker):
 @pytest.fixture
 def aws_config_patched_without_authority_url(mocker):
     newparams = params.copy()
-    newparams.pop("oidc_authority_url")
+    newparams.pop('oidc_authority_url')
     mock1 = mocker.patch('configparser.ConfigParser.__getitem__', return_value=newparams)
     mock2 = mocker.patch('configparser.ConfigParser.read', return_value=None)
     mock3 = mocker.patch('configparser.ConfigParser.has_section', return_value=True)

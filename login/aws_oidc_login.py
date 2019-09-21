@@ -62,7 +62,7 @@ def aws_oidc_login():
     token = oidc.get_id_token()
     email = jwt.get_email(token)
 
-    print("Assuming role {}".format(config.ROLE_ARN))
+    print("Authentication done. Assuming AWS IAM role {}".format(config.ROLE_ARN))
     creds = aws_sts.assume_role_with_web_identity(
         RoleArn=config.ROLE_ARN,
         RoleSessionName=email,
@@ -73,7 +73,7 @@ def aws_oidc_login():
     if config.WEB_CONSOLE_LOGIN:
         login_url = web_console_login(creds, session_duration=3600)
         webbrowser.open_new_tab(login_url)
-        print("console login url: {url}".format(url=login_url))
+        print("Web Console login URL: {url}".format(url=login_url))
 
 
 aws_sts = get_aws_sts()
