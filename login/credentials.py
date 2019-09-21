@@ -25,4 +25,4 @@ def write(new_creds):
     aws_creds.set(config.PROFILE, 'aws_session_expiration', c['Expiration'].isoformat())
 
     with open(creds_file, 'w') as configfile:
-        print(aws_creds.write(configfile))
+        aws_creds.write(configfile)
