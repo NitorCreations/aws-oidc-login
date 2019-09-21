@@ -38,21 +38,22 @@ class OidcAuthenticationCodeFlowAuthorizer:
     class _RedirectHandler(BaseHTTPRequestHandler):
         def do_GET(self):
             query_components = parse_qs(urlparse(self.path).query)
-            try:
-                code = query_components['code'][0]
-            except KeyError:
-                self.fail('Didn\'t get authorization code in query parameter "code".')
             state = query_components.get('state', [None])[0]
-            if not state == OidcAuthenticationCodeFlowAuthorizer.state:
+            if 'error' in query_components:
+                self.fail(('An error occured in the OIDC flow at the identity '
+                           'provider: {}<br><br>Full IdP response query path: {}')
+                          .format(query_components.get('error')[0], self.path))
+            elif 'code' not in query_components:
+                self.fail('Didn\'t get authorization code in query parameter "code".')
+            elif not state == OidcAuthenticationCodeFlowAuthorizer.state:
                 self.fail('Incorrect value for "state" parameter in OIDC flow. Try again?')
-            elif 'error' in query_components:
-                self.fail('An error occured. Check the request URL for details.')
             else:
+                code = query_components['code'][0]
                 OidcAuthenticationCodeFlowAuthorizer.code_result = code
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
-                self.wfile.write(self._prepare_output(('Login done. You can close this window or tab '
+                self.wfile.write(self._prepare_output(('Authentication done. You can close this window or tab '
                                                        'and crawl back to your shell.')))
 
         def fail(self, message):
@@ -65,6 +66,7 @@ class OidcAuthenticationCodeFlowAuthorizer:
             return
 
         def _prepare_output(self, output):
+            output = "<h1>AWS OIDC Login</h1>" + output
             if (sys.version_info > (3, 0)):
                 return bytes(output, "UTF-8")
             else:
@@ -80,6 +82,9 @@ class OidcAuthenticationCodeFlowAuthorizer:
             + '&response_type=code' \
             + '&response_mode=query' \
             + '&state={STATE}'.format(STATE=OidcAuthenticationCodeFlowAuthorizer.state)
+
+        if config.PRINT_AUTHORIZE_URL:
+            print("Opening the following URL in browser: {}".format(url))
         webbrowser.open_new(url)
 
         with ThreadingHTTPServer(('127.0.0.1', 8401), self._RedirectHandler) as server:
