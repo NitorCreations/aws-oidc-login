@@ -32,17 +32,26 @@ def test_init(args_patched, aws_config_patched):
     for mock in aws_config_patched:
         mock.call_count == 1
     args_patched.call_count == 1
+    _verify_config(args, params)
 
 
-def test_missing_authority_url(args_patched, aws_config_patched_without_authority_url):
+def test_init_missing_authority_url(args_patched, aws_config_patched_without_authority_url):
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         config.init()
-
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == 1
     for mock in aws_config_patched_without_authority_url:
         mock.call_count == 1
     args_patched.call_count == 1
+
+
+def _verify_config(args, params):
+    assert config.PROFILE == args['profile']
+    assert config.CONFIG_PROFILE == "profile {}".format(args['profile'])
+    assert config.ROLE_ARN == params['oidc_role_arn']
+    assert config.CLIENT_ID == params['oidc_client_id']
+    assert config.AUTHORITY_URL == params['oidc_authority_url']
+    assert config.WEB_CONSOLE_LOGIN == args['web_console_login']
 
 
 @pytest.fixture

@@ -9,7 +9,7 @@ except ImportError:
     import ConfigParser as configparser
 
 
-def write(profile, new_creds):
+def write(new_creds):
     aws_creds = configparser.ConfigParser()
     home = expanduser('~')
     creds_file = home + '/.aws/credentials'
@@ -25,4 +25,4 @@ def write(profile, new_creds):
     aws_creds.set(config.PROFILE, 'aws_session_expiration', c['Expiration'].isoformat())
 
     with open(creds_file, 'w') as configfile:
-        aws_creds.write(configfile)
+        print(aws_creds.write(configfile))

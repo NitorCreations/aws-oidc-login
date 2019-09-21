@@ -75,4 +75,4 @@ def test_login(oidc_patched, aws_federation_endpoint_patched, sts_stub, config_p
 
     login.aws_oidc_login.aws_oidc_login()
 
-    credentials_patched.assert_called_with(test_profile, assume_role_response)
+    credentials_patched.assert_called_with(assume_role_response)

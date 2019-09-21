@@ -1,4 +1,3 @@
-import sys
 import json
 # pypi dependencies
 import boto3
@@ -70,7 +69,7 @@ def aws_oidc_login():
         WebIdentityToken=token,
         DurationSeconds=3600
     )
-    credentials.write(config.PROFILE, creds)
+    credentials.write(creds)
     if config.WEB_CONSOLE_LOGIN:
         login_url = web_console_login(creds, session_duration=3600)
         webbrowser.open_new_tab(login_url)

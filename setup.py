@@ -32,6 +32,7 @@ setup(name='aws-oidc-login',
           'pytest-mock==1.10.4',
           'pytest-cov==2.7.1',
           'requests-mock==1.6.0',
-          'pytest-runner'
+          'pytest-runner',
+          'mock==3.0.5'
       ],
       test_suite='tests')
