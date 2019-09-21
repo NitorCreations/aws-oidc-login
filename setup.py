@@ -1,16 +1,16 @@
 # coding=utf8
-
-import pathlib2
 from setuptools import setup
+import os
 
-HERE = pathlib2.Path(__file__).parent
-README = (HERE / "README.md").read_text()
+dir_path = os.path.dirname(os.path.realpath(__file__))
+with open(dir_path + '/README.md', 'r') as f:
+    README = ''.join(f.readlines())
 
 setup(name='aws-oidc-login',
       version='0.1.1',
       description='CLI login to AWS using OpenID Connect',
       long_description=README,
-      long_description_content_type="text/markdown",
+      long_description_content_type='text/markdown',
       url='http://github.com/NitorCreations/aws-oidc-login',
       download_url='https://github.com/NitorCreations/aws-oidc-login',
       author='Mika Majakorpi',
@@ -22,7 +22,7 @@ setup(name='aws-oidc-login',
       entry_points={
           'console_scripts': ['aol=login.aws_oidc_login:aws_oidc_login'],
       },
-      setup_requires=['pytest-runner', 'wheel', 'pathlib2'],
+      setup_requires=['pytest-runner'],
       install_requires=[
           'boto3==1.9.208',
           'requests==2.22.0',
