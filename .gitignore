@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 .eggs/
 aws_oidc_login.egg-info/
+.coverage
+build/
+dist/
+htmlcov/
