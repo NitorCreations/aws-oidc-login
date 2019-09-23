@@ -2,11 +2,11 @@
 
 The aim for this is to create a general purpose CLI OIDC login with a limited set of trusted dependencies.
 
-Tested with Azure AD. Your mileage may vary with other providers, please let us know!
+Tested with Azure AD for now. Your mileage may vary with other providers, please let us know!
 
 [![Codeship Status for NitorCreations/aws-oidc-login](https://app.codeship.com/projects/c1b8cf70-ba79-0137-d140-5ec1c160b8c0/status?branch=master)](https://app.codeship.com/projects/364808)
 
-## Setup (Azure AD example)
+## Prerequisites (Azure AD example)
 * Create Azure AD App
     * Set public client reply url to `http://localhost`
     * Add an appRole (may be unnecessary)
@@ -23,9 +23,9 @@ Tested with Azure AD. Your mileage may vary with other providers, please let us 
     * `oidc_client_id=<id of your AAD app>`
     * `oidc_role_arn=<ARN of the role you are assuming on AWS>`
 
-## Install aws-oidc-login
+## Installation
 
-Clone this repo and run `pip install aws-oidc-login` inside it.
+It's [available on PyPI](https://pypi.org/project/aws-oidc-login/). Install by running `pip install aws-oidc-login`.
 
 ## Run
 
