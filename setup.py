@@ -7,7 +7,7 @@ with open(dir_path + '/README.md', 'r') as f:
     README = ''.join(f.readlines())
 
 setup(name='aws-oidc-login',
-      version='0.1.2',
+      version='0.2.0',
       description='CLI login to AWS using OpenID Connect',
       long_description=README,
       long_description_content_type='text/markdown',
