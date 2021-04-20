@@ -4,35 +4,84 @@
 #
 #    pip-compile --output-file=dev-requirements.txt dev-requirements.in
 #
-atomicwrites==1.3.0       # via pytest
-attrs==19.1.0             # via packaging, pytest
+atomicwrites==1.3.0
+    # via pytest
+attrs==19.1.0
+    # via
+    #   packaging
+    #   pytest
 bumpversion==0.5.3
-certifi==2019.6.16        # via requests
-chardet==3.0.4            # via requests
-click==7.0                # via pip-tools
-coverage==4.5.4           # via coveralls, pytest-cov
+    # via -r dev-requirements.in
+certifi==2019.6.16
+    # via requests
+chardet==3.0.4
+    # via requests
+click==7.0
+    # via pip-tools
+coverage==4.5.4
+    # via
+    #   coveralls
+    #   pytest-cov
 coveralls==1.8.2
-docopt==0.6.2             # via coveralls
-entrypoints==0.3          # via flake8
+    # via -r dev-requirements.in
+docopt==0.6.2
+    # via coveralls
+entrypoints==0.3
+    # via flake8
 flake8==3.7.7
-idna==2.8                 # via requests
-importlib-metadata==0.19  # via pluggy, pytest
-mccabe==0.6.1             # via flake8
+    # via -r dev-requirements.in
+idna==2.8
+    # via requests
+importlib-metadata==0.19
+    # via
+    #   pluggy
+    #   pytest
+mccabe==0.6.1
+    # via flake8
 mock==3.0.5
-more-itertools==5.0.0     # via pytest, zipp
-packaging==19.1           # via pytest
+    # via -r dev-requirements.in
+more-itertools==5.0.0
+    # via pytest
+packaging==19.1
+    # via pytest
 pip-tools==4.0.0
-pluggy==0.12.0            # via pytest
-py==1.8.0                 # via pytest
-pycodestyle==2.5.0        # via flake8
-pyflakes==2.1.1           # via flake8
-pyparsing==2.4.2          # via packaging
+    # via -r dev-requirements.in
+pluggy==0.12.0
+    # via pytest
+py==1.10.0
+    # via pytest
+pycodestyle==2.5.0
+    # via flake8
+pyflakes==2.1.1
+    # via flake8
+pyparsing==2.4.2
+    # via packaging
 pytest-cov==2.7.1
+    # via -r dev-requirements.in
 pytest-mock==1.10.4
+    # via -r dev-requirements.in
 pytest==4.6.5
+    # via
+    #   -r dev-requirements.in
+    #   pytest-cov
+    #   pytest-mock
 requests-mock==1.6.0
-requests==2.22.0          # via coveralls, requests-mock
-six==1.12.0               # via mock, more-itertools, packaging, pip-tools, pytest, requests-mock
-urllib3==1.25.3           # via requests
-wcwidth==0.1.7            # via pytest
-zipp==0.6.0               # via importlib-metadata
+    # via -r dev-requirements.in
+requests==2.22.0
+    # via
+    #   coveralls
+    #   requests-mock
+six==1.12.0
+    # via
+    #   mock
+    #   more-itertools
+    #   packaging
+    #   pip-tools
+    #   pytest
+    #   requests-mock
+urllib3==1.25.3
+    # via requests
+wcwidth==0.1.7
+    # via pytest
+zipp==0.6.0
+    # via importlib-metadata
