@@ -7,7 +7,7 @@
 argparse==1.4.0
 boto3==1.9.208
 botocore==1.12.208        # via boto3, s3transfer
-certifi==2019.6.16        # via requests
+certifi==2022.12.7        # via requests
 chardet==3.0.4            # via requests
 docutils==0.14            # via botocore
 idna==2.8                 # via requests
